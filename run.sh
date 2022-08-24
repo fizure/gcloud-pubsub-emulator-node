@@ -5,7 +5,7 @@
 #
 # After it's done, port 8682 will be open to facilitate the wait-for and
 # wait-for-it scripts.
-(/usr/bin/wait-for localhost:8681 -- env PUBSUB_EMULATOR_HOST=localhost:8681 npm run start; nc -lkp 8682 >/dev/null) &
+(/usr/bin/wait-for -t 20 localhost:8681 -- env PUBSUB_EMULATOR_HOST=localhost:8681 npm run start; nc -lkp 8682 >/dev/null) &
 
 # Start the PubSub emulator in the foreground.
 gcloud beta emulators pubsub start --host-port=0.0.0.0:8681 --verbosity=debug "$@"
