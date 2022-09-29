@@ -12,9 +12,9 @@ async function createSubscription(
 	pushEndpoint: string,
 ) {
 	const options: SubscriptionMetadata = {
-		pushConfig: {
+		pushConfig: pushEndpoint ? {
 			pushEndpoint,
-		},
+		} : undefined,
 		name: topicName,
 		topic: topicName,
 		ackDeadlineSeconds: ACK_DEADLINE,
