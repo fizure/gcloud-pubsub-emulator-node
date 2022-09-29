@@ -12,7 +12,7 @@ Installation
 A pre-built Docker container is available for Docker Hub:
 
 ```
-docker run --rm -ti -p 8681:8681 messagebird/gcloud-pubsub-emulator:latest
+docker run --rm -ti -p 8681:8681 fizure/gcloud-pubsub-emulator-node:latest
 ```
 
 Or, you can build this repository yourself:
