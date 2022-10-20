@@ -1,12 +1,9 @@
 
-FROM google/cloud-sdk:276.0.0-alpine
+FROM google/cloud-sdk:alpine
 
 WORKDIR /usr/app
 
-RUN apk --update --no-cache add nghttp2-dev openjdk8-jre netcat-openbsd nodejs npm \
-	&& gcloud components install beta pubsub-emulator \
-	&& rm -rf $(find google-cloud-sdk/ -regex ".*/__pycache__") \
-    && rm -rf google-cloud-sdk/.install/.backup
+RUN apk --update add openjdk8-jre netcat-openbsd nodejs nodejs npm && gcloud components install beta pubsub-emulator
 
 RUN curl -s https://raw.githubusercontent.com/eficode/wait-for/master/wait-for -o /usr/bin/wait-for
 RUN chmod +x /usr/bin/wait-for

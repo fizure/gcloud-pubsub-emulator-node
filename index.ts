@@ -88,9 +88,4 @@ const migrate = async () => {
 	console.log('Finished setting everything up');
 };
 
-migrate()
-	.then(() => process.exit(0))
-	.catch((error) => {
-		console.error(error);
-		process.exit(1);
-	});
+await migrate();
