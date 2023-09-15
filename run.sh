@@ -1,11 +1,35 @@
 #!/bin/sh
 
-# Start the PubSub client in the background. It will poll for an open PubSub
-# emulator port and create its topics and subscriptions when it's up.
-#
-# After it's done, port 8682 will be open to facilitate the wait-for and
-# wait-for-it scripts.
-(/usr/bin/wait-for -t 20 localhost:8681 -- env PUBSUB_EMULATOR_HOST=localhost:8681 npm run start; nc -lkp 8682 >/dev/null) &
+set -e  # Exit immediately on error
+
+cleanup() {
+    echo "Cleaning up and killing all processes in the current process group"
+    # Get the PGID of the current script's process using pgrep
+    pgid=$(pgrep -o -P $$)
+    # Kill all processes in the current process group using kill with a negative PGID
+    kill -- "-$pgid"
+}
+
+# Set up a trap to call the cleanup function on script exit
+trap cleanup EXIT
 
 # Start the PubSub emulator in the foreground.
-gcloud beta emulators pubsub start --host-port=0.0.0.0:8681 --verbosity=debug "$@"
+gcloud beta emulators pubsub start --host-port=0.0.0.0:8681 --verbosity=debug "$@" &
+
+# Run the wait-for command in the background and capture its PID
+/usr/bin/wait-for -t 30 localhost:8681 &
+waitfor_pid=$!
+
+wait "$waitfor_pid"
+
+# Check the exit status of the wait-for command
+if [ $? -eq 0 ]; then
+    (
+        env PUBSUB_EMULATOR_HOST=localhost:8681 npm run start
+		# Used for docker compose healthcheck
+        echo -e "HTTP/1.1 200 OK\n\n OK" | nc -l 8682
+    ) &
+fi
+
+# Wait for the background processes to complete
+wait
