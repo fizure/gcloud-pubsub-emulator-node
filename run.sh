@@ -27,7 +27,7 @@ if [ $? -eq 0 ]; then
     (
         env PUBSUB_EMULATOR_HOST=localhost:8681 npm run start
 		# Used for docker compose healthcheck
-        echo -e "HTTP/1.1 200 OK\n\n OK" | nc -l 8682
+		while true; do { echo -ne "HTTP/1.1 200 OK\r\n"; echo -ne "Content-Length: 0\r\n"; echo -ne "\r\n"; } | nc -l -p 8682 -q 1 & wait $!; done
     ) &
 fi
 
